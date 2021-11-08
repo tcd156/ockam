@@ -15,7 +15,7 @@ defmodule Ockam.Examples.Session.SimpleRouting do
   ```
   """
 
-  alias Ockam.Session.Routing
+  alias Ockam.Session.Routing.Pluggable, as: Routing
   alias Ockam.Session.Spawner
 
   alias Ockam.Session.ForwardingDataWorker, as: DataWorker
@@ -53,7 +53,10 @@ defmodule Ockam.Examples.Session.SimpleRouting do
 
   def run_local() do
     {:ok, responder} = create_responder()
-    {:ok, initiator} = create_initiator([responder])
+
+    {:ok, responder_inner} = Ockam.AsymmetricWorker.get_inner_address(responder)
+
+    {:ok, initiator} = create_initiator([responder_inner])
 
     Routing.Initiator.wait_for_session(initiator)
 

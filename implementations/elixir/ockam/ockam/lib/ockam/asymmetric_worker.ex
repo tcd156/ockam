@@ -38,6 +38,17 @@ defmodule Ockam.AsymmetricWorker do
               | {:error, reason :: any()}
               | {:stop, reason :: any(), state :: map()}
 
+  ## TODO: maybe think of better API than :sys.get_state
+  def get_inner_address(worker) do
+    case Ockam.Node.whereis(worker) do
+      nil ->
+        {:error, :not_found}
+
+      pid ->
+        {:ok, :sys.get_state(pid) |> Map.get(:inner_address)}
+    end
+  end
+
   defmacro __using__(_options) do
     quote do
       use Ockam.Worker
